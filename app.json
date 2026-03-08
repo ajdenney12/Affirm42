@@ -37,11 +37,6 @@
     "plugins": [
       "expo-router"
     ],
-    "scheme": "nextself",
-    "extra": {
-      "eas": {
-        "projectId": "your-project-id-here"
-      }
-    }
+    "scheme": "nextself"
   }
 }
