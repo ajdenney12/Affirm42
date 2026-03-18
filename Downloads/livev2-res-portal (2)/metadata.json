@@ -1,0 +1,7 @@
+{
+  "name": "LIVEv2 RES Portal ",
+  "description": "RESIDENT VERSION",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
