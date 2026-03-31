@@ -26,10 +26,8 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "ajdenney12@gmail.com"
+        "appleId": "ajdenney12@gmail.com",
         "appleTeamId": "N25UGBW446"
-      },
-
       }
     }
   }
