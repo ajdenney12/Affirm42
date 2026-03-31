@@ -27,7 +27,6 @@
     "production": {
       "ios": {
         "appleId": "ajdenney12@gmail.com"
-        "ascAppId": "your-asc-app-id",
         "appleTeamId": "N25UGBW446"
       },
       "android": {
