@@ -39,8 +39,8 @@
     ],
     "scheme": "nextself", 
     "extra": {
-  "supabaseUrl": "https://ivfiqofptugsgsljykxo.supabase.com",
-  "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml2Zmlxb2ZwdHVnc2dzbGp5a3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTE1ODIsImV4cCI6MjA5MDkyNzU4Mn0.2uA06tSzfKH1LkfcYrBkCmueUOJRB2zmZ4WFVKs9Pp8"
+  "supabaseUrl": "https://nuyhsepyczukxxlstxla.supabase.co/functions/v1/smart-task",
+  "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eWhzZXB5Y3p1a3h4bHN0eGxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5NTM2OTMsImV4cCI6MjA4NDUyOTY5M30.vbYHj8sqSlBc6KiVlzVx-10WZwQ4d8bgAxeP0L8MwEY"
 }
   }
 }
