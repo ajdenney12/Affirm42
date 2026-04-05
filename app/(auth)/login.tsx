@@ -24,6 +24,7 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [showAgeVerification, setShowAgeVerification] = useState(false);
   const [ageConfirmed, setAgeConfirmed] = useState(false);
+  const [showDisclaimers, setShowDisclaimers] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -203,6 +204,13 @@ export default function LoginScreen() {
                     </Text>
                   </Text>
                 </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => setShowDisclaimers(true)}
+                  style={styles.disclaimerLink}
+                >
+                  <Text style={styles.disclaimerLinkText}>View Disclaimers</Text>
+                </TouchableOpacity>
               </>
             ) : (
               <>
@@ -268,6 +276,16 @@ export default function LoginScreen() {
                 In accordance with our Terms of Service, you must be at least 13 years old to create an account and use NextSelf.
               </Text>
 
+              <TouchableOpacity
+                style={styles.disclaimerButton}
+                onPress={() => {
+                  setShowAgeVerification(false);
+                  setShowDisclaimers(true);
+                }}
+              >
+                <Text style={styles.disclaimerButtonText}>View Disclaimers</Text>
+              </TouchableOpacity>
+
               <View style={styles.checkboxContainer}>
                 <TouchableOpacity
                   style={styles.checkbox}
@@ -308,6 +326,63 @@ export default function LoginScreen() {
                   </LinearGradient>
                 </TouchableOpacity>
               </View>
+            </View>
+          </View>
+        </Modal>
+
+        <Modal
+          visible={showDisclaimers}
+          transparent
+          animationType="slide"
+          onRequestClose={() => setShowDisclaimers(false)}
+        >
+          <View style={styles.disclaimerModalOverlay}>
+            <View style={styles.disclaimerModalContent}>
+              <View style={styles.disclaimerModalHeader}>
+                <Text style={styles.disclaimerModalTitle}>Disclaimers</Text>
+                <TouchableOpacity onPress={() => setShowDisclaimers(false)}>
+                  <Text style={styles.disclaimerModalClose}>✕</Text>
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView style={styles.disclaimerModalBody} showsVerticalScrollIndicator={false}>
+                <View style={styles.disclaimerSection}>
+                  <Text style={styles.disclaimerTitle}>General Disclaimer</Text>
+                  <Text style={styles.disclaimerText}>
+                    NextSelf is designed for personal growth and motivational purposes only. The content, affirmations, and goal-tracking features provided are not a substitute for professional medical, psychological, or mental health advice, diagnosis, or treatment.
+                  </Text>
+                </View>
+
+                <View style={styles.disclaimerSection}>
+                  <Text style={styles.disclaimerTitle}>Mental Health Disclaimer</Text>
+                  <Text style={styles.disclaimerText}>
+                    This app is not a mental health service and is not intended to diagnose, treat, cure, or prevent any mental health condition or disorder. If you are experiencing a mental health crisis or emergency, please contact a licensed mental health professional or call 988 (Suicide & Crisis Lifeline) immediately.
+                  </Text>
+                </View>
+
+                <View style={styles.disclaimerSection}>
+                  <Text style={styles.disclaimerTitle}>Medical Disclaimer</Text>
+                  <Text style={styles.disclaimerText}>
+                    Nothing in this app constitutes medical advice. Always seek the guidance of a qualified healthcare provider before making any changes to your health, wellness, or lifestyle routine. Never disregard professional medical advice because of something you read or experience in this app.
+                  </Text>
+                </View>
+
+                <View style={styles.disclaimerSection}>
+                  <Text style={styles.disclaimerTitle}>General Liability</Text>
+                  <Text style={styles.disclaimerText}>
+                    By using NextSelf you acknowledge that results may vary and that Anthropic and the app developer are not liable for any decisions made based on content within this app. Use of this app is at your own discretion and risk.
+                  </Text>
+                </View>
+              </ScrollView>
+
+              <TouchableOpacity
+                style={styles.disclaimerModalButton}
+                onPress={() => setShowDisclaimers(false)}
+              >
+                <LinearGradient colors={['#3B82F6', '#EC4899']} style={styles.buttonGradient}>
+                  <Text style={styles.buttonText}>Close</Text>
+                </LinearGradient>
+              </TouchableOpacity>
             </View>
           </View>
         </Modal>
@@ -556,5 +631,77 @@ const styles = StyleSheet.create({
   },
   modalButtonDisabled: {
     opacity: 0.5,
+  },
+  disclaimerLink: {
+    marginTop: 12,
+    alignItems: 'center',
+  },
+  disclaimerLinkText: {
+    fontSize: 13,
+    color: '#6B7280',
+    textDecorationLine: 'underline',
+  },
+  disclaimerButton: {
+    paddingVertical: 8,
+    marginBottom: 16,
+  },
+  disclaimerButtonText: {
+    fontSize: 14,
+    color: '#3B82F6',
+    textAlign: 'center',
+    textDecorationLine: 'underline',
+  },
+  disclaimerModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  disclaimerModalContent: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    maxHeight: '85%',
+  },
+  disclaimerModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 24,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  disclaimerModalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1F2937',
+  },
+  disclaimerModalClose: {
+    fontSize: 24,
+    color: '#9CA3AF',
+    fontWeight: '300',
+  },
+  disclaimerModalBody: {
+    padding: 24,
+  },
+  disclaimerSection: {
+    marginBottom: 24,
+  },
+  disclaimerTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1F2937',
+    marginBottom: 8,
+  },
+  disclaimerText: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#6B7280',
+  },
+  disclaimerModalButton: {
+    margin: 24,
+    marginTop: 0,
+    borderRadius: 12,
+    overflow: 'hidden',
   },
 });
