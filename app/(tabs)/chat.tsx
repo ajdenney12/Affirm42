@@ -13,6 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
 import { supabase } from '../../lib/supabase';
+import { useSubscription } from '../../contexts/SubscriptionContext';
 
 interface Message {
   id: string;
@@ -22,6 +23,7 @@ interface Message {
 }
 
 export default function ChatScreen() {
+  const { isPremium } = useSubscription();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -56,9 +58,10 @@ export default function ChatScreen() {
       }));
 
       const { data: { session } } = await supabase.auth.getSession();
-      const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eWhzZXB5Y3p1a3h4bHN0eGxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5NTM2OTMsImV4cCI6MjA4NDUyOTY5M30.vbYHj8sqSlBc6KiVlzVx-10WZwQ4d8bgAxeP0L8MwEY';
-      const supabaseUrl = 'https://nuyhsepyczukxxlstxla.supabase.co';
+      const anonKey = Constants.expoConfig?.extra?.supabaseAnonKey || '';
+      const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl || '';
       const authToken = session?.access_token || anonKey;
+      const userId = session?.user?.id;
 
       const response = await fetch(
         `${supabaseUrl}/functions/v1/ai-chat`,
@@ -71,15 +74,19 @@ export default function ChatScreen() {
           body: JSON.stringify({
             messages: chatMessages,
             systemPrompt: 'You are a supportive wellness coach.',
+            userId: userId,
           }),
         }
       );
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
+      console.log('API Response:', JSON.stringify(data));
       const responseText = data.content?.[0]?.text || data.reply || 'I apologize, I could not process that request.';
 
       const aiMessage: Message = {
@@ -119,7 +126,7 @@ export default function ChatScreen() {
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.chatContainer}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 160 : 0}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
         >
           <ScrollView
             ref={scrollViewRef}
@@ -217,6 +224,7 @@ const styles = StyleSheet.create({
   },
   messagesContent: {
     padding: 20,
+    paddingBottom: 20,
     gap: 12,
   },
   messageBubble: {
@@ -254,12 +262,11 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
   },
   inputContainer: {
-  flexDirection: 'row',
-  padding: 20,
-  paddingBottom: Platform.OS === 'ios' ? 30 : 20,
-  gap: 12,
-  backgroundColor: 'rgba(255, 255, 255, 0.3)',
-},
+    flexDirection: 'row',
+    padding: 20,
+    gap: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+  },
   input: {
     flex: 1,
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
