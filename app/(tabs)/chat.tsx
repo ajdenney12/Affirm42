@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Constants from 'expo-constants';
 import { supabase } from '../../lib/supabase';
 
 interface Message {
@@ -48,23 +49,42 @@ export default function ChatScreen() {
     setLoading(true);
 
     try {
+      const updatedMessages = [...messages, userMessage];
+      const chatMessages = updatedMessages.map(msg => ({
+        role: msg.sender === 'user' ? 'user' : 'assistant',
+        content: msg.text,
+      }));
+
+      const { data: { session } } = await supabase.auth.getSession();
+      const anonKey = Constants.expoConfig?.extra?.supabaseAnonKey || '';
+      const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl || '';
+      const authToken = session?.access_token || anonKey;
+
       const response = await fetch(
-        `https://kfsxlgegxdmhyqqwhbrl.supabase.co/functions/v1/ai-chat`,
+        `${supabaseUrl}/functions/v1/ai-chat`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+            Authorization: `Bearer ${authToken}`,
           },
-          body: JSON.stringify({ message: userMessage.text }),
+          body: JSON.stringify({
+            messages: chatMessages,
+            systemPrompt: 'You are a supportive wellness coach.',
+          }),
         }
       );
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
+      const responseText = data.content?.[0]?.text || data.reply || 'I apologize, I could not process that request.';
 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: data.reply || 'I apologize, I could not process that request.',
+        text: responseText,
         sender: 'ai',
         timestamp: new Date(),
       };
@@ -99,12 +119,14 @@ export default function ChatScreen() {
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.chatContainer}
+          keyboardVerticalOffset={0}
         >
           <ScrollView
             ref={scrollViewRef}
             style={styles.messagesContainer}
             contentContainerStyle={styles.messagesContent}
             showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
             onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
           >
             {messages.map((message) => (
