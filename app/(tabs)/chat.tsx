@@ -56,7 +56,7 @@ export default function ChatScreen() {
       }));
 
       const { data: { session } } = await supabase.auth.getSession();
-      const anonKey = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eWhzZXB5Y3p1a3h4bHN0eGxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5NTM2OTMsImV4cCI6MjA4NDUyOTY5M30.vbYHj8sqSlBc6KiVlzVx-10WZwQ4d8bgAxeP0L8MwEY
+      const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eWhzZXB5Y3p1a3h4bHN0eGxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5NTM2OTMsImV4cCI6MjA4NDUyOTY5M30.vbYHj8sqSlBc6KiVlzVx-10WZwQ4d8bgAxeP0L8MwEY';
       const supabaseUrl = 'https://nuyhsepyczukxxlstxla.supabase.co';
       const authToken = session?.access_token || anonKey;
 
