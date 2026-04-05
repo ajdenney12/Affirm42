@@ -13,7 +13,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
 import { supabase } from '../../lib/supabase';
-import { useSubscription } from '../../contexts/SubscriptionContext';
 
 interface Message {
   id: string;
@@ -23,7 +22,6 @@ interface Message {
 }
 
 export default function ChatScreen() {
-  const { isPremium } = useSubscription();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
