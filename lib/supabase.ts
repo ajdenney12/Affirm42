@@ -3,8 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
 
-const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl || 'https://kfsxlgegxdmhyqqwhbrl.supabase.co';
-const supabaseAnonKey = Constants.expoConfig?.extra?.supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtmc3hsZ2VneGRtaHlxcXdoYnJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4OTA3NzcsImV4cCI6MjA4NTQ2Njc3N30.8vzdgVhVWshNRVFzQ4jxhQjlzK9fIeienPS-Msrzb30';
+const supabaseUrl = 'https://nuyhsepyczukxxlstxla.supabase.co';
+const supabaseAnonKey = 'YOUR_EYJ_KEY_FROM_AJDENNEY12_PROJECT';
 
 const ExpoSecureStoreAdapter = {
   getItem: (key: string) => {
