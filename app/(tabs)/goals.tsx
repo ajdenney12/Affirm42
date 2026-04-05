@@ -14,6 +14,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase';
+import { useSubscription } from '../../contexts/SubscriptionContext';
 
 type GoalType = 'progress' | 'checklist' | 'yesno' | 'numeric';
 
@@ -24,6 +25,7 @@ interface ChecklistItem {
 }
 
 export default function GoalsScreen() {
+  const { isPremium } = useSubscription();
   const [goals, setGoals] = useState<any[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newGoalTitle, setNewGoalTitle] = useState('');
@@ -35,8 +37,10 @@ export default function GoalsScreen() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    loadGoals();
-  }, []);
+    if (isPremium) {
+      loadGoals();
+    }
+  }, [isPremium]);
 
   const loadGoals = async () => {
     try {
@@ -222,7 +226,11 @@ export default function GoalsScreen() {
           </TouchableOpacity>
         </View>
 
-        <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          style={styles.list}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+        >
           {goals.length === 0 ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyIcon}>🎯</Text>
@@ -542,6 +550,9 @@ const styles = StyleSheet.create({
   list: {
     flex: 1,
     paddingHorizontal: 20,
+  },
+  listContent: {
+    paddingBottom: 20,
   },
   emptyState: {
     alignItems: 'center',
