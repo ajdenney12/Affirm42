@@ -17,6 +17,15 @@ import { useRouter } from 'expo-router';
 
 export default function LoginScreen() {
   const router = useRouter();
+useEffect(() => {
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      router.replace('/(tabs)');
+    }
+  });
+  return () => subscription.unsubscribe();
+}, []);
+  
   const [isLogin, setIsLogin] = useState(true);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [email, setEmail] = useState('ajordan12@gmail.com');
@@ -34,11 +43,12 @@ export default function LoginScreen() {
 
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw error;
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+});
+if (error) throw error;
+router.replace('/(tabs)');
     } catch (error: any) {
       Alert.alert('Error', error.message || 'An error occurred');
     } finally {
@@ -66,7 +76,9 @@ export default function LoginScreen() {
         password,
       });
       if (error) throw error;
-      Alert.alert('Success', 'Account created successfully!');
+      Alert.alert('Success', 'Account created! Please log in.', [
+  { text: 'OK', onPress: () => setIsLogin(true) }
+]);
     } catch (error: any) {
       Alert.alert('Error', error.message || 'An error occurred');
     } finally {
