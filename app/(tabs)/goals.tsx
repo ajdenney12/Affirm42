@@ -25,7 +25,6 @@ interface ChecklistItem {
 }
 
 export default function GoalsScreen() {
-  const { isPremium } = useSubscription();
   const [goals, setGoals] = useState<any[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newGoalTitle, setNewGoalTitle] = useState('');
@@ -36,11 +35,7 @@ export default function GoalsScreen() {
   const [newChecklistItem, setNewChecklistItem] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (isPremium) {
-      loadGoals();
-    }
-  }, [isPremium]);
+
 
   const loadGoals = async () => {
     try {
