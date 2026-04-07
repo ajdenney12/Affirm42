@@ -56,9 +56,9 @@ export default function ChatScreen() {
       }));
 
       const { data: { session } } = await supabase.auth.getSession();
-      const anonKey = Constants.expoConfig?.extra?.supabaseAnonKey || '';
-      const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl || '';
-      const authToken = session?.access_token || anonKey;
+      const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl || 'https://kfsxlgegxdmhyqqwhbrl.supabase.co';
+      const supabaseAnonKey = Constants.expoConfig?.extra?.supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtmc3hsZ2VneGRtaHlxcXdoYnJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4OTA3NzcsImV4cCI6MjA4NTQ2Njc3N30.8vzdgVhVWshNRVFzQ4jxhQjlzK9fIeienPS-Msrzb30';
+      const authToken = session?.access_token || supabaseAnonKey;
       const userId = session?.user?.id;
 
       const response = await fetch(
@@ -115,7 +115,7 @@ export default function ChatScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <LinearGradient colors={['#E0E7FF', '#FECDD3']} style={styles.gradient}>
+      <LinearGradient colors={['#E9D5FF', '#FECDD3']} style={styles.gradient}>
         <View style={styles.header}>
           <Text style={styles.title}>AI Coach</Text>
           <Text style={styles.subtitle}>Your personal wellness guide</Text>
@@ -206,13 +206,14 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#1F2937',
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: '#1F2937',
+    marginTop: 4,
   },
   chatContainer: {
     flex: 1,
@@ -227,9 +228,14 @@ const styles = StyleSheet.create({
   },
   messageBubble: {
     maxWidth: '80%',
-    padding: 12,
+    padding: 16,
     borderRadius: 16,
     marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   userBubble: {
     alignSelf: 'flex-end',
@@ -237,7 +243,7 @@ const styles = StyleSheet.create({
   },
   aiBubble: {
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: '#FFFFFF',
   },
   messageText: {
     fontSize: 16,
@@ -267,11 +273,14 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 12,
     fontSize: 16,
     maxHeight: 100,
+    color: '#1F2937',
+    borderWidth: 1,
+    borderColor: '#E9D5FF',
   },
   sendButton: {
     borderRadius: 12,
