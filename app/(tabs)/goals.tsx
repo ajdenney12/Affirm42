@@ -14,7 +14,6 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase';
-import { useSubscription } from '../../contexts/SubscriptionContext';
 
 type GoalType = 'progress' | 'checklist' | 'yesno' | 'numeric';
 
@@ -35,7 +34,9 @@ export default function GoalsScreen() {
   const [newChecklistItem, setNewChecklistItem] = useState('');
   const [loading, setLoading] = useState(false);
 
-
+  useEffect(() => {
+    loadGoals();
+  }, []);
 
   const loadGoals = async () => {
     try {
@@ -210,7 +211,7 @@ export default function GoalsScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <LinearGradient colors={['#E0E7FF', '#FECDD3']} style={styles.gradient}>
+      <LinearGradient colors={['#E9D5FF', '#FECDD3']} style={styles.gradient}>
         <View style={styles.header}>
           <View>
             <Text style={styles.title}>Goals</Text>
@@ -522,25 +523,32 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#1F2937',
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: '#1F2937',
+    marginTop: 4,
   },
   addButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#8B5CF6',
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
   addIcon: {
     fontSize: 28,
-    color: '#8B5CF6',
+    color: '#FFFFFF',
+    fontWeight: 'bold',
   },
   list: {
     flex: 1,
@@ -560,12 +568,12 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#1F2937',
+    color: '#7C3AED',
     marginBottom: 8,
   },
   emptySubtext: {
     fontSize: 16,
-    color: '#6B7280',
+    color: '#A855F7',
   },
   card: {
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
@@ -590,7 +598,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1F2937',
+    color: '#7C3AED',
     marginBottom: 4,
   },
   goalTypeLabel: {
@@ -600,7 +608,7 @@ const styles = StyleSheet.create({
   },
   cardDescription: {
     fontSize: 14,
-    color: '#6B7280',
+    color: '#A855F7',
     marginBottom: 12,
   },
   progressContainer: {
@@ -608,7 +616,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: 8,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: 'rgba(233, 213, 255, 0.4)',
     borderRadius: 4,
     overflow: 'hidden',
     marginBottom: 8,
@@ -619,7 +627,7 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: '#A855F7',
   },
   cardActions: {
     flexDirection: 'row',
@@ -643,7 +651,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   yesNoButton: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: 'rgba(233, 213, 255, 0.3)',
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
@@ -655,7 +663,7 @@ const styles = StyleSheet.create({
   yesNoText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#6B7280',
+    color: '#7C3AED',
   },
   yesNoTextCompleted: {
     color: '#FFFFFF',
@@ -667,7 +675,7 @@ const styles = StyleSheet.create({
   numericValue: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1F2937',
+    color: '#7C3AED',
     textAlign: 'center',
     marginBottom: 8,
   },
@@ -684,7 +692,7 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 6,
     borderWidth: 2,
-    borderColor: '#D1D5DB',
+    borderColor: '#E9D5FF',
     marginRight: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -700,16 +708,16 @@ const styles = StyleSheet.create({
   },
   checklistText: {
     fontSize: 16,
-    color: '#1F2937',
+    color: '#7C3AED',
     flex: 1,
   },
   checklistTextCompleted: {
     textDecorationLine: 'line-through',
-    color: '#9CA3AF',
+    color: '#C4B5FD',
   },
   checklistProgress: {
     fontSize: 12,
-    color: '#6B7280',
+    color: '#A855F7',
     marginTop: 8,
     textAlign: 'center',
   },
@@ -729,7 +737,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1F2937',
+    color: '#7C3AED',
     marginBottom: 24,
   },
   inputGroup: {
@@ -738,16 +746,17 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#374151',
+    color: '#7C3AED',
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: '#E9D5FF',
     borderRadius: 12,
     padding: 12,
     fontSize: 16,
+    color: '#7C3AED',
   },
   textArea: {
     height: 80,
@@ -761,14 +770,14 @@ const styles = StyleSheet.create({
   modalButtonCancel: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: 'rgba(233, 213, 255, 0.5)',
     borderRadius: 12,
     alignItems: 'center',
   },
   modalButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#6B7280',
+    color: '#7C3AED',
   },
   modalButtonConfirm: {
     flex: 1,
@@ -794,7 +803,7 @@ const styles = StyleSheet.create({
     minWidth: '45%',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: 'rgba(233, 213, 255, 0.3)',
     borderRadius: 8,
     borderWidth: 2,
     borderColor: 'transparent',
@@ -806,7 +815,7 @@ const styles = StyleSheet.create({
   typeButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6B7280',
+    color: '#7C3AED',
     textAlign: 'center',
   },
   typeButtonTextActive: {
@@ -816,19 +825,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: 'rgba(233, 213, 255, 0.3)',
     padding: 12,
     borderRadius: 8,
     marginBottom: 8,
   },
   checklistItemText: {
     fontSize: 14,
-    color: '#1F2937',
+    color: '#7C3AED',
     flex: 1,
   },
   removeItemButton: {
     fontSize: 18,
-    color: '#EF4444',
+    color: '#EC4899',
     fontWeight: 'bold',
     paddingHorizontal: 8,
   },
