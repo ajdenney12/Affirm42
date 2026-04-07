@@ -12,14 +12,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase';
 import { useRouter } from 'expo-router';
-import { useSubscription } from '../../contexts/SubscriptionContext';
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const { isPremium, upgradeToPremium } = useSubscription();
   const [userEmail, setUserEmail] = useState('');
   const [showDisclaimers, setShowDisclaimers] = useState(false);
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   useEffect(() => {
     loadUserInfo();
@@ -29,16 +26,6 @@ export default function SettingsScreen() {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       setUserEmail(user.email || '');
-    }
-  };
-
-  const handleUpgrade = async () => {
-    try {
-      await upgradeToPremium();
-      setShowUpgradeModal(false);
-      Alert.alert('Success', 'You now have access to all premium features!');
-    } catch (error: any) {
-      Alert.alert('Error', 'Failed to upgrade. Please try again.');
     }
   };
 
@@ -62,7 +49,7 @@ export default function SettingsScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <LinearGradient colors={['#E0E7FF', '#FECDD3']} style={styles.gradient}>
+      <LinearGradient colors={['#E9D5FF', '#FECDD3']} style={styles.gradient}>
         <View style={styles.header}>
           <Text style={styles.title}>Settings</Text>
           <Text style={styles.subtitle}>Manage your account</Text>
@@ -80,33 +67,8 @@ export default function SettingsScreen() {
                 <Text style={styles.infoLabel}>Email</Text>
                 <Text style={styles.infoValue}>{userEmail}</Text>
               </View>
-              <View style={[styles.infoRow, { marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#E5E7EB' }]}>
-                <Text style={styles.infoLabel}>Subscription</Text>
-                <View style={styles.premiumBadge}>
-                  <Text style={styles.premiumBadgeText}>
-                    {isPremium ? 'Premium' : 'Free'}
-                  </Text>
-                </View>
-              </View>
             </View>
           </View>
-
-          {!isPremium && (
-            <View style={styles.section}>
-              <TouchableOpacity
-                onPress={() => setShowUpgradeModal(true)}
-                style={styles.upgradeButton}
-              >
-                <LinearGradient colors={['#8B5CF6', '#EC4899']} style={styles.upgradeButtonGradient}>
-                  <Text style={styles.upgradeButtonIcon}>✨</Text>
-                  <View style={styles.upgradeButtonContent}>
-                    <Text style={styles.upgradeButtonTitle}>Upgrade to Premium</Text>
-                    <Text style={styles.upgradeButtonSubtitle}>One-time payment of $9.99</Text>
-                  </View>
-                </LinearGradient>
-              </TouchableOpacity>
-            </View>
-          )}
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Information</Text>
@@ -127,64 +89,6 @@ export default function SettingsScreen() {
             </TouchableOpacity>
           </View>
         </ScrollView>
-
-        <Modal
-          visible={showUpgradeModal}
-          transparent
-          animationType="slide"
-          onRequestClose={() => setShowUpgradeModal(false)}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>Upgrade to Premium</Text>
-                <TouchableOpacity onPress={() => setShowUpgradeModal(false)}>
-                  <Text style={styles.modalClose}>✕</Text>
-                </TouchableOpacity>
-              </View>
-
-              <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
-                <View style={styles.upgradeContent}>
-                  <Text style={styles.upgradeIcon}>✨</Text>
-                  <Text style={styles.upgradePrice}>$9.99</Text>
-                  <Text style={styles.upgradePriceSubtitle}>One-time payment</Text>
-
-                  <View style={styles.featuresList}>
-                    <View style={styles.featureItem}>
-                      <Text style={styles.featureCheck}>✓</Text>
-                      <Text style={styles.featureText}>Access to Dashboard</Text>
-                    </View>
-                    <View style={styles.featureItem}>
-                      <Text style={styles.featureCheck}>✓</Text>
-                      <Text style={styles.featureText}>Unlimited Affirmations</Text>
-                    </View>
-                    <View style={styles.featureItem}>
-                      <Text style={styles.featureCheckPremium}>✓</Text>
-                      <Text style={styles.featureTextPremium}>Goal Setting & Tracking</Text>
-                    </View>
-                    <View style={styles.featureItem}>
-                      <Text style={styles.featureCheckPremium}>✓</Text>
-                      <Text style={styles.featureTextPremium}>AI Life Coach Chat</Text>
-                    </View>
-                  </View>
-
-                  <Text style={styles.upgradeNote}>
-                    Unlock all features with a single payment. No subscriptions, no recurring charges.
-                  </Text>
-                </View>
-              </ScrollView>
-
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={handleUpgrade}
-              >
-                <LinearGradient colors={['#8B5CF6', '#EC4899']} style={styles.buttonGradient}>
-                  <Text style={styles.buttonText}>Upgrade Now</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
 
         <Modal
           visible={showDisclaimers}
@@ -260,11 +164,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#1F2937',
+    color: '#7C3AED',
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: '#A855F7',
   },
   content: {
     flex: 1,
@@ -279,7 +183,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6B7280',
+    color: '#A855F7',
     marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -302,11 +206,11 @@ const styles = StyleSheet.create({
   infoLabel: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#374151',
+    color: '#7C3AED',
   },
   infoValue: {
     fontSize: 16,
-    color: '#6B7280',
+    color: '#A855F7',
   },
   menuItem: {
     flexDirection: 'row',
@@ -316,16 +220,16 @@ const styles = StyleSheet.create({
   menuItemText: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#374151',
+    color: '#7C3AED',
   },
   menuItemArrow: {
     fontSize: 24,
-    color: '#9CA3AF',
+    color: '#C4B5FD',
   },
   logoutButton: {
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    backgroundColor: 'rgba(236, 72, 153, 0.1)',
     borderWidth: 1,
-    borderColor: '#EF4444',
+    borderColor: '#EC4899',
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
@@ -333,7 +237,7 @@ const styles = StyleSheet.create({
   logoutButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#EF4444',
+    color: '#EC4899',
   },
   modalOverlay: {
     flex: 1,
@@ -353,16 +257,16 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: '#E9D5FF',
   },
   modalTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1F2937',
+    color: '#7C3AED',
   },
   modalClose: {
     fontSize: 24,
-    color: '#9CA3AF',
+    color: '#C4B5FD',
     fontWeight: '300',
   },
   modalBody: {
@@ -374,13 +278,13 @@ const styles = StyleSheet.create({
   disclaimerTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1F2937',
+    color: '#7C3AED',
     marginBottom: 8,
   },
   disclaimerText: {
     fontSize: 14,
     lineHeight: 20,
-    color: '#6B7280',
+    color: '#A855F7',
   },
   modalButton: {
     margin: 24,
@@ -396,103 +300,5 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
-  },
-  premiumBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-    backgroundColor: '#F3F4F6',
-  },
-  premiumBadgeText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#6B7280',
-  },
-  upgradeButton: {
-    borderRadius: 16,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  upgradeButtonGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 20,
-  },
-  upgradeButtonIcon: {
-    fontSize: 32,
-    marginRight: 16,
-  },
-  upgradeButtonContent: {
-    flex: 1,
-  },
-  upgradeButtonTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: 4,
-  },
-  upgradeButtonSubtitle: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.9)',
-  },
-  upgradeContent: {
-    alignItems: 'center',
-  },
-  upgradeIcon: {
-    fontSize: 64,
-    marginBottom: 16,
-  },
-  upgradePrice: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#1F2937',
-    marginBottom: 4,
-  },
-  upgradePriceSubtitle: {
-    fontSize: 16,
-    color: '#6B7280',
-    marginBottom: 32,
-  },
-  featuresList: {
-    width: '100%',
-    marginBottom: 24,
-  },
-  featureItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  featureCheck: {
-    fontSize: 20,
-    color: '#10B981',
-    marginRight: 12,
-    width: 24,
-  },
-  featureCheckPremium: {
-    fontSize: 20,
-    color: '#8B5CF6',
-    marginRight: 12,
-    width: 24,
-  },
-  featureText: {
-    fontSize: 16,
-    color: '#6B7280',
-    flex: 1,
-  },
-  featureTextPremium: {
-    fontSize: 16,
-    color: '#1F2937',
-    fontWeight: '600',
-    flex: 1,
-  },
-  upgradeNote: {
-    fontSize: 14,
-    color: '#6B7280',
-    textAlign: 'center',
-    lineHeight: 20,
   },
 });
