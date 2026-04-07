@@ -2,7 +2,7 @@
   "expo": {
     "name": "NextSelf",
     "slug": "nextself",
-    "version": "1.0.9",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -17,7 +17,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.nextwellai.nextself",
-      "buildNumber": "1.0.9",
+      "buildNumber": "1.0.0",
       "infoPlist": {
         "NSCameraUsageDescription": "This app does not use the camera.",
         "NSPhotoLibraryUsageDescription": "This app does not access your photo library."
@@ -37,10 +37,13 @@
     "plugins": [
       "expo-router"
     ],
-    "scheme": "nextself", 
+    "scheme": "nextself",
     "extra": {
-  "supabaseUrl": "https://nuyhsepyczukxxlstxla.supabase.co/functions/v1/smart-task",
-  "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eWhzZXB5Y3p1a3h4bHN0eGxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5NTM2OTMsImV4cCI6MjA4NDUyOTY5M30.vbYHj8sqSlBc6KiVlzVx-10WZwQ4d8bgAxeP0L8MwEY"
-}
+      "eas": {
+        "projectId": "your-project-id-here"
+      },
+      "supabaseUrl": "https://kfsxlgegxdmhyqqwhbrl.supabase.co",
+      "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtmc3hsZ2VneGRtaHlxcXdoYnJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4OTA3NzcsImV4cCI6MjA4NTQ2Njc3N30.8vzdgVhVWshNRVFzQ4jxhQjlzK9fIeienPS-Msrzb30"
+    }
   }
 }
