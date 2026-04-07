@@ -1,4 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -14,6 +15,7 @@ interface ChatMessage {
 interface RequestBody {
   messages: ChatMessage[];
   systemPrompt: string;
+  userId?: string;
 }
 
 // Extract specific topics and keywords from conversation
@@ -253,8 +255,78 @@ function generateReflectiveQuestions(messages: ChatMessage[], questionNumber: nu
   return fallbacks[questionNumber - 1] || fallbacks[0];
 }
 
+// Generate a personalized affirmation from conversation
+function generatePersonalizedAffirmation(messages: ChatMessage[]): string {
+  const topics = extractTopics(messages);
+  const userMessages = messages.filter(m => m.role === 'user');
+  const conversationText = userMessages.map(m => m.content).join(' ').toLowerCase();
+
+  // Prioritize based on what user shared
+  if (topics.specificGoals.length > 0) {
+    const goal = topics.specificGoals[0];
+    return `I am fully capable of ${goal}, and I take meaningful action every day.`;
+  }
+
+  if (topics.specificActivities.length > 0) {
+    const activity = topics.specificActivities[0];
+    if (activity.includes('run') || activity.includes('fitness') || activity.includes('exercise')) {
+      return "My body is strong and capable of achieving my fitness goals.";
+    } else if (activity.includes('business') || activity.includes('startup') || activity.includes('career')) {
+      return "I have the vision, skills, and determination to build something meaningful.";
+    } else if (activity.includes('learn') || activity.includes('study') || activity.includes('language')) {
+      return "I am an eager learner and my mind absorbs new knowledge effortlessly.";
+    } else if (activity.includes('writing') || activity.includes('creative')) {
+      return "My creative voice is unique and valuable, and I trust my artistic process.";
+    } else if (activity.includes('coding') || activity.includes('programming')) {
+      return "I am a skilled problem-solver and I grow more capable with each project.";
+    }
+  }
+
+  if (topics.specificChallenges.length > 0) {
+    const challenge = topics.specificChallenges[0];
+    return `I am developing the skills and resilience to overcome ${challenge}.`;
+  }
+
+  return "I trust in my abilities and my capacity to learn and grow.";
+}
+
+// Generate a personalized goal from conversation
+function generatePersonalizedGoal(messages: ChatMessage[]): { title: string; description: string } {
+  const topics = extractTopics(messages);
+  const userMessages = messages.filter(m => m.role === 'user');
+
+  if (topics.specificGoals.length > 0) {
+    const goalText = topics.specificGoals[0];
+    return {
+      title: goalText.charAt(0).toUpperCase() + goalText.slice(0, 50),
+      description: `Based on our conversation, work towards ${goalText}.`,
+    };
+  }
+
+  if (topics.specificActivities.length > 0) {
+    const activity = topics.specificActivities[0];
+    return {
+      title: `Progress with ${activity}`,
+      description: `Continue developing your skills and practice with ${activity}.`,
+    };
+  }
+
+  if (topics.specificChallenges.length > 0) {
+    const challenge = topics.specificChallenges[0];
+    return {
+      title: `Overcome challenge`,
+      description: `Work on overcoming ${challenge} with steady progress.`,
+    };
+  }
+
+  return {
+    title: "Personal growth goal",
+    description: "Continue working on your personal development journey.",
+  };
+}
+
 // Generate short, supportive responses with structured question flow
-function generateCoachResponse(messages: ChatMessage[], systemPrompt: string): string {
+async function generateCoachResponse(messages: ChatMessage[], systemPrompt: string, userId?: string, supabaseClient?: any): Promise<string> {
   const lastMessage = messages[messages.length - 1]?.content || '';
   const lastMessageLower = lastMessage.toLowerCase();
   const userMessages = messages.filter(m => m.role === 'user');
@@ -266,31 +338,80 @@ function generateCoachResponse(messages: ChatMessage[], systemPrompt: string): s
     return "Hi! What's on your mind today?";
   }
 
-  // User said yes to affirmations
-  if (lastMessageLower.includes('yes') || lastMessageLower.includes('sure') || lastMessageLower.includes('ok') || lastMessageLower.includes('please')) {
-    if (assistantMessages.length > 0) {
-      const lastAssistantMessage = assistantMessages[assistantMessages.length - 1].content.toLowerCase();
-      if (lastAssistantMessage.includes('would you like') && lastAssistantMessage.includes('affirmation')) {
-        return generateThreeAffirmations(messages);
+  // Check if user is responding to goal/affirmation choice
+  if (assistantMessages.length > 0) {
+    const lastAssistantMessage = assistantMessages[assistantMessages.length - 1].content.toLowerCase();
+
+    // User chose Affirmation
+    if (lastAssistantMessage.includes('affirmation or goal') && lastAssistantMessage.includes('please choose one')) {
+      if (lastMessageLower.includes('affirmation')) {
+        const affirmationText = generatePersonalizedAffirmation(messages);
+
+        // Save affirmation to database
+        if (userId && supabaseClient) {
+          try {
+            await supabaseClient
+              .from('affirmations')
+              .insert({
+                user_id: userId,
+                text: affirmationText,
+              });
+          } catch (error) {
+            console.error('Error saving affirmation:', error);
+          }
+        }
+
+        return `I've saved this affirmation for you: "${affirmationText}"`;
+      }
+
+      // User chose Goal
+      if (lastMessageLower.includes('goal')) {
+        const goalData = generatePersonalizedGoal(messages);
+
+        // Save goal to database
+        if (userId && supabaseClient) {
+          try {
+            await supabaseClient
+              .from('goals')
+              .insert({
+                user_id: userId,
+                title: goalData.title,
+                description: goalData.description,
+                type: 'progress',
+                status: 'active',
+                current: 0,
+                target: 1,
+              });
+          } catch (error) {
+            console.error('Error saving goal:', error);
+          }
+        }
+
+        return `I've created this goal for you: ${goalData.title}`;
+      }
+    }
+
+    // User said yes to creating goal/affirmation
+    if (lastAssistantMessage.includes('would you like to create') && (lastAssistantMessage.includes('goal') || lastAssistantMessage.includes('affirmation'))) {
+      if (lastMessageLower.includes('yes') || lastMessageLower.includes('sure') || lastMessageLower.includes('ok') || lastMessageLower.includes('please')) {
+        return "Great! I can help you with that. Would you like me to summarize your reflection into an affirmation or a goal statement? Please choose one: Affirmation or Goal";
+      }
+
+      if (lastMessageLower.includes('no') || lastMessageLower.includes('not') || lastMessageLower.includes('nah')) {
+        return "No problem! Let me know if I can help with any other interests.";
       }
     }
   }
 
-  // User said no to affirmations
-  if ((lastMessageLower === 'no' || lastMessageLower === 'not yet' || lastMessageLower.includes('no thanks')) && assistantMessages.length > 0) {
-    const lastAssistantMessage = assistantMessages[assistantMessages.length - 1].content.toLowerCase();
-    if (lastAssistantMessage.includes('would you like') && lastAssistantMessage.includes('affirmation')) {
-      return "That's okay! What else would you like to explore?";
+  // After user's 3rd-5th message, offer to create goal or affirmation
+  if (userMessageCount >= 3 && userMessageCount <= 5) {
+    const questionNumber = userMessageCount;
+
+    if (questionNumber === 5) {
+      return "Thank you for sharing all of that with me. Would you like to create a goal or affirmation based on what we've discussed?";
     }
-  }
 
-  // After user's 4th message, offer affirmations
-  if (userMessageCount === 4) {
-    return "Thank you for sharing all of that with me. Would you like me to offer 3 affirmation statements based on what we've discussed?";
-  }
-
-  // Questions 1-3: Ask reflective questions with supportive feedback
-  if (userMessageCount >= 1 && userMessageCount <= 3) {
+    // Questions 1-4: Ask reflective questions with supportive feedback
     const supportiveFeedback = [
       "That's really insightful.",
       "I appreciate you sharing that.",
@@ -301,7 +422,7 @@ function generateCoachResponse(messages: ChatMessage[], systemPrompt: string): s
     ];
 
     const feedback = supportiveFeedback[Math.floor(Math.random() * supportiveFeedback.length)];
-    const question = generateReflectiveQuestions(messages, userMessageCount);
+    const question = generateReflectiveQuestions(messages, questionNumber);
 
     return `${feedback} ${question}`;
   }
@@ -328,7 +449,7 @@ Deno.serve(async (req: Request) => {
 
   try {
     // Parse request body
-    const { messages, systemPrompt }: RequestBody = await req.json();
+    const { messages, systemPrompt, userId }: RequestBody = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(
@@ -343,8 +464,13 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    // Create Supabase client for database operations
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
+
     // Generate response using pattern matching
-    const responseText = generateCoachResponse(messages, systemPrompt);
+    const responseText = await generateCoachResponse(messages, systemPrompt, userId, supabaseClient);
 
     // Return response in Claude API format
     const data = {
